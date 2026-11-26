@@ -1,0 +1,22 @@
+customer_id,age,tenure_months,monthly_charges,contract_type,internet_service,tech_support,payment_method,churn
+C1001,24,12,79.5,Month-to-month,Fiber optic,No,Electronic check,Yes
+C1002,41,48,65.2,One year,DSL,Yes,Bank transfer,No
+C1003,unknown,5,99.9,month to month,Fiber,No,Electronic check,Yes
+C1004,35,60,,Two year,DSL,Yes,Credit card,No
+C1005,52,24,120.0,Month-to-month,Fiber optic,,Mailed check,Yes
+C1006,29,18,45.5,One year,No,No,Bank transfer,No
+C1007,999,36,89.0,Month-to-month,DSL,Yes,Credit card,No
+C1008,63,72,55.0,Two year,Fiber optic,No,Mailed check,No
+C1009,22,3,110.0,Month-to-month,Fiber optic,No,Electronic check,Yes
+C1010,47,42,70.0,One year,DSL,Yes,Bank transfer,No
+C1011,31,15,85.0,Month-to-month,DSL,No,Electronic check,Yes
+C1012,58,66,49.0,Two year,No,Yes,Credit card,No
+C1013,44,-4,92.0,Month-to-month,Fiber optic,Yes,Mailed check,Yes
+C1014,39,30,not_recorded,One year,DSL,No,Bank transfer,No
+C1015,26,8,105.0,Month-to-month,Fiber,Yes,Electronic check,Yes
+C1016,67,70,60.0,Two year,No,No,Credit card,No
+C1017,33,20,75.0,Month-to-month,Fiber optic,Unknown,Mailed check,Yes
+C1018,55,54,58.0,One year,DSL,Yes,Bank transfer,No
+C1019,28,10,95.0,Month-to-month,Fiber optic,No,Electronic check,Yes
+C1020,49,64,52.0,Two year,DSL,Yes,Credit card,No
+C1002,41,48,65.2,One year,DSL,Yes,Bank transfer,No
