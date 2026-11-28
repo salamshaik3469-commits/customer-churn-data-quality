@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Customer Churn | Business KPI Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#14243b;--muted:#65758b;--blue:#2463eb;--teal:#0f9d87;--red:#df5b66;--line:#e6edf5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+.wrap{max-width:1180px;margin:auto;padding:28px 18px 48px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:clamp(24px,4vw,34px);margin:0 0 6px}.sub{color:var(--muted);font-size:14px}.tag{background:#e9f1ff;color:#1c55c7;border-radius:99px;padding:7px 12px;font-size:12px;font-weight:700}
+.filters,.card,.kpi{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 4px 18px #243b5308}
+.filters{padding:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:16px}.field{display:flex;flex-direction:column;gap:6px;min-width:170px;flex:1}
+label{font-size:12px;color:var(--muted);font-weight:700}select,button{border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;color:var(--ink);font:inherit}
+button{background:var(--blue);color:white;border:0;font-weight:700;cursor:pointer}.btn2{background:#edf3ff;color:#1c55c7}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}.kpi{padding:18px}.kpi .name{font-size:12px;color:var(--muted);font-weight:700}.kpi .value{font-size:clamp(22px,3vw,30px);font-weight:800;margin:8px 0 4px}.kpi .hint{font-size:12px;color:var(--muted)}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{padding:18px;min-width:0}.card h2{font-size:16px;margin:0 0 14px}.chartbox{height:270px;position:relative}
+.note{margin-top:16px;background:#fff8e8;border:1px solid #f3dfb5;border-radius:14px;padding:14px;color:#74531b;font-size:12px;line-height:1.6}
+footer{color:var(--muted);font-size:12px;margin-top:18px;text-align:center}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}.chartbox{height:250px}}
+@media(max-width:420px){.grid{grid-template-columns:1fr 1fr}.kpi{padding:13px}.filters .field{min-width:100%}}
+</style></head><body><main class="wrap">
+<header class="top"><div><h1>Business KPI Dashboard</h1><div class="sub">Customer churn · retention · recurring revenue risk · customer segments</div></div><span class="tag">INTERACTIVE ANALYTICS</span></header>
+<section class="filters">
+<div class="field"><label for="contract">CONTRACT TYPE</label><select id="contract"><option value="All">All contracts</option></select></div>
+<div class="field"><label for="tenure">TENURE SEGMENT</label><select id="tenure"><option value="All">All tenure</option><option value="New">New (&lt;12 months)</option><option value="Established">Established (12–36 months)</option><option value="Loyal">Loyal (&gt;36 months)</option></select></div>
+<div class="field"><label for="payment">PAYMENT METHOD</label><select id="payment"><option value="All">All payment methods</option></select></div>
+<button id="reset" class="btn2">Reset filters</button><button id="download">Download filtered CSV</button>
+</section>
+<section class="grid">
+<div class="kpi"><div class="name">CUSTOMERS</div><div class="value" id="customers">—</div><div class="hint">Customers in selected segment</div></div>
+<div class="kpi"><div class="name">CHURN RATE</div><div class="value" id="churn">—</div><div class="hint">Share of customers who left</div></div>
+<div class="kpi"><div class="name">RETENTION RATE</div><div class="value" id="retention">—</div><div class="hint">Share of customers retained</div></div>
+<div class="kpi"><div class="name">MONTHLY REVENUE AT RISK</div><div class="value" id="risk">—</div><div class="hint">Sum of monthly charges for churned customers</div></div>
+</section>
+<section class="charts">
+<div class="card"><h2>Churn vs retained customers</h2><div class="chartbox"><canvas id="statusChart"></canvas></div></div>
+<div class="card"><h2>Churn rate by contract type</h2><div class="chartbox"><canvas id="contractChart"></canvas></div></div>
+<div class="card"><h2>Churn rate by payment method</h2><div class="chartbox"><canvas id="paymentChart"></canvas></div></div>
+<div class="card"><h2>Customer count by tenure segment</h2><div class="chartbox"><canvas id="tenureChart"></canvas></div></div>
+</section>
+<div class="note"><b>Data & interpretation note:</b> This dashboard uses the cleaned, synthetic demonstration dataset in this project repository because the original Edvyro CSV was not supplied in the chat. Values are illustrative, not real company results. Churn rate = churned customers ÷ selected customers. Retention rate = retained customers ÷ selected customers. Monthly revenue at risk = sum of monthly charges for churned customers; it is an estimate of recurring charges, not a forecast or recognized revenue. Segment differences are descriptive and do not prove causation.</div>
+<footer>Business KPI Dashboard · Built for the Edvyro student task · Source: data/customer_churn_cleaned.csv</footer>
+</main>
+<script>
+const rows=[["C1001",24,12,79.5,"Month-to-month","Fiber optic","No","Electronic check","Yes"],["C1002",41,48,65.2,"One year","DSL","Yes","Bank transfer","No"],["C1003",40,5,99.9,"Month-to-month","Fiber optic","No","Electronic check","Yes"],["C1004",35,60,77.25,"Two year","DSL","Yes","Credit card","No"],["C1005",52,24,120,"Month-to-month","Fiber optic","Unknown","Mailed check","Yes"],["C1006",29,18,45.5,"One year","No","No","Bank transfer","No"],["C1007",40,36,89,"Month-to-month","DSL","Yes","Credit card","No"],["C1008",63,72,55,"Two year","Fiber optic","No","Mailed check","No"],["C1009",22,3,110,"Month-to-month","Fiber optic","No","Electronic check","Yes"],["C1010",47,42,70,"One year","DSL","Yes","Bank transfer","No"],["C1011",31,15,85,"Month-to-month","DSL","No","Electronic check","Yes"],["C1012",58,66,49,"Two year","No","Yes","Credit card","No"],["C1013",44,30,92,"Month-to-month","Fiber optic","Yes","Mailed check","Yes"],["C1014",39,30,77.25,"One year","DSL","No","Bank transfer","No"],["C1015",26,8,105,"Month-to-month","Fiber optic","Yes","Electronic check","Yes"],["C1016",67,70,60,"Two year","No","No","Credit card","No"],["C1017",33,20,75,"Month-to-month","Fiber optic","Unknown","Mailed check","Yes"],["C1018",55,54,58,"One year","DSL","Yes","Bank transfer","No"],["C1019",28,10,95,"Month-to-month","Fiber optic","No","Electronic check","Yes"],["C1020",49,64,52,"Two year","DSL","Yes","Credit card","No"]].map(r=>({id:r[0],age:r[1],tenure:r[2],charge:r[3],contract:r[4],internet:r[5],support:r[6],payment:r[7],churn:r[8]}));
+const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+const pct=n=>n.toFixed(1)+'%';
+const tenureGroup=n=>n<12?'New':n<=36?'Established':'Loyal';
+const unique=k=>[...new Set(rows.map(r=>r[k]))].sort();
+for(const v of unique('contract')) document.querySelector('#contract').insertAdjacentHTML('beforeend',`<option>${v}</option>`);
+for(const v of unique('payment')) document.querySelector('#payment').insertAdjacentHTML('beforeend',`<option>${v}</option>`);
+const chartRefs={};
+function chart(id,type,labels,datasets){if(chartRefs[id])chartRefs[id].destroy();chartRefs[id]=new Chart(document.getElementById(id),{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type!=='bar',position:'bottom'}},scales:type==='bar'?{y:{beginAtZero:true,ticks:{callback:v=>v+'%'}}}:{}}});}
+function groupRate(items,key){const labels=[...new Set(items.map(r=>r[key]))];return {labels,values:labels.map(l=>{const g=items.filter(r=>r[key]===l);return g.length?100*g.filter(r=>r.churn==='Yes').length/g.length:0})};}
+function update(){
+ const c=document.querySelector('#contract').value,t=document.querySelector('#tenure').value,p=document.querySelector('#payment').value;
+ const filtered=rows.filter(r=>(c==='All'||r.contract===c)&&(t==='All'||tenureGroup(r.tenure)===t)&&(p==='All'||r.payment===p));
+ const lost=filtered.filter(r=>r.churn==='Yes'),kept=filtered.filter(r=>r.churn==='No'),total=filtered.length;
+ document.querySelector('#customers').textContent=total;
+ document.querySelector('#churn').textContent=total?pct(100*lost.length/total):'—';
+ document.querySelector('#retention').textContent=total?pct(100*kept.length/total):'—';
+ document.querySelector('#risk').textContent=money(lost.reduce((s,r)=>s+r.charge,0));
+ chart('statusChart','doughnut',['Churned','Retained'],[{data:[lost.length,kept.length],backgroundColor:['#df5b66','#0f9d87'],borderWidth:0}]);
+ const a=groupRate(filtered,'contract');chart('contractChart','bar',a.labels,[{label:'Churn rate',data:a.values,backgroundColor:'#4779e8',borderRadius:7}]);
+ const b=groupRate(filtered,'payment');chart('paymentChart','bar',b.labels,[{label:'Churn rate',data:b.values,backgroundColor:'#16a18b',borderRadius:7}]);
+ const labels=['New','Established','Loyal'];chart('tenureChart','bar',labels,[{label:'Customers',data:labels.map(l=>filtered.filter(r=>tenureGroup(r.tenure)===l).length),backgroundColor:'#8a69d4',borderRadius:7}]);
+}
+['contract','tenure','payment'].forEach(id=>document.getElementById(id).addEventListener('change',update));
+document.getElementById('reset').addEventListener('click',()=>{['contract','tenure','payment'].forEach(id=>document.getElementById(id).value='All');update()});
+document.getElementById('download').addEventListener('click',()=>{const c=document.querySelector('#contract').value,t=document.querySelector('#tenure').value,p=document.querySelector('#payment').value;const f=rows.filter(r=>(c==='All'||r.contract===c)&&(t==='All'||tenureGroup(r.tenure)===t)&&(p==='All'||r.payment===p));const head=['customer_id','age','tenure_months','monthly_charges','contract_type','internet_service','tech_support','payment_method','churn'];const csv=[head.join(','),...f.map(r=>[r.id,r.age,r.tenure,r.charge,r.contract,r.internet,r.support,r.payment,r.churn].join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='filtered_customer_churn.csv';a.click();URL.revokeObjectURL(a.href)});
+update();
+</script></body></html>
